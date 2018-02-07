@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 
 public class block : MonoBehaviour {
 
+	public GameObject frame;
+
 	public int height = -1;
 	public string hash;
 	public string previous_block_hash;
@@ -47,7 +49,7 @@ public class block : MonoBehaviour {
 			// deinitialize block to redo load if there is an error
 			if (!string.IsNullOrEmpty(www.error)) {
 				Debug.Log(www.error);
-				TextMesh text = GetComponentInChildren<TextMesh>();
+				TextMesh text = GetComponentInParent<TextMesh>();
 				text.text = "ERROR";
 				initialized = false;
 
@@ -77,15 +79,58 @@ public class block : MonoBehaviour {
 				text.text = "# " + height;
 
 				// generate art
-//				GameObject myLine = new GameObject();
-//
-//				myLine.AddComponent<LineRenderer>();
-//				LineRenderer lr = myLine.GetComponent<LineRenderer>();
-//				lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
-//				lr.startColor (Color.green);
-//				lr.SetWidth(0.1f, 0.1f);
-//
-//				GameObject.Destroy(myLine, 0.2f);
+				SpriteRenderer current = GetComponentInChildren<SpriteRenderer>();
+
+				Texture2D tex = new Texture2D(10,10);
+
+				Vector3 point00 = transform.TransformPoint(new Vector3(-0.5f,-0.5f));
+				Vector3 point10 = transform.TransformPoint(new Vector3( 0.5f,-0.5f));
+				Vector3 point01 = transform.TransformPoint(new Vector3(-0.5f, 0.5f));
+				Vector3 point11 = transform.TransformPoint(new Vector3( 0.5f, 0.5f));
+
+				float resolution = 10;
+
+				float stepSize = 1f / resolution;
+
+				int first = 1;
+				int second = 1;
+				if (miner != "unknown") {
+					Random.InitState(miner.GetHashCode());
+					first = (int)Mathf.Floor (Random.Range (0.0f, 3.0f));
+					second = (int)Mathf.Floor (Random.Range (0.0f, 3.0f));
+				}
+
+
+				Random.InitState (height);
+
+				for (int y = 0; y < resolution; y++) {
+					Vector3 point0 = Vector3.Lerp(point00, point01, (y + 0.5f) * stepSize);
+					Vector3 point1 = Vector3.Lerp(point10, point11, (y + 0.5f) * stepSize);
+					for (int x = 0; x < resolution; x++) {
+						Vector3 point = Vector3.Lerp(point0, point1, (x + 0.5f) * stepSize);
+
+						float[] c = new float[3];
+
+						c[0] = Random.Range (0.0f, 1.0f);
+						c[1] = Random.Range (0.0f, 1.0f);
+						c[2] = Random.Range (0.0f, 1.0f);
+
+						c[first] = c[second];
+
+						tex.SetPixel(x, y, new Color(c[0], c[1], c[2]));
+					}
+				}
+					
+				tex.Apply();
+
+				tex.filterMode = FilterMode.Point;
+
+				//current.drawMode = SpriteDrawMode.Tiled;
+				Sprite art = Sprite.Create (tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f, 0, SpriteMeshType.FullRect);
+
+				current.sprite = art;
+
+				frame.transform.localScale = new Vector3 (100, 100, 10);
 			}
 
 		}

@@ -1,11 +1,12 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/_scripts/block.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/_scripts/move.cs">
     <Files>
-      <File FileName="Assets/_scripts/move.cs" Line="1" Column="1" />
-      <File FileName="Assets/_scripts/exhibits.cs" Line="38" Column="11" />
-      <File FileName="Assets/_scripts/terrain.cs" Line="1" Column="1" />
-      <File FileName="Assets/_scripts/block.cs" Line="40" Column="61" />
+      <File FileName="Assets/_scripts/exhibits.cs" Line="98" Column="111" />
+      <File FileName="Assets/_scripts/block.cs" Line="118" Column="19" />
+      <File FileName="Assets/_scripts/terrain.cs" Line="25" Column="17" />
+      <File FileName="Assets/_scripts/collider.cs" Line="23" Column="3" />
+      <File FileName="Assets/_scripts/move.cs" Line="66" Column="119" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

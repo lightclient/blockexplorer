@@ -15,7 +15,8 @@ public class move : MonoBehaviour {
 	public float speed;
 
 	// privates
-	bool isGrounded = false;  
+	bool isGrounded = false; 
+	int jumpCount = 0;
 	Rigidbody2D sprite;
 
 
@@ -27,8 +28,9 @@ public class move : MonoBehaviour {
 	void FixedUpdate() {
 
 		// jump logic
-		if (Input.GetKey(KeyCode.Space) && isGrounded) {
+		if (Input.GetKey(KeyCode.Space) && jumpCount < 2) {
 			sprite.AddForce (Vector3.up * (jumpPower * sprite.mass * sprite.gravityScale * 20.0f));
+			jumpCount += 1;
 		}
 			
 		// flip sprite depending on the direction they're moving
@@ -60,7 +62,7 @@ public class move : MonoBehaviour {
 	}
 
 	// collision detection 
-	void OnCollisionEnter2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; } }
-	void  OnCollisionStay2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; } }
+	void OnCollisionEnter2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; jumpCount = 0; } }
+	void  OnCollisionStay2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; jumpCount = 0; } }
 	void  OnCollisionExit2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = false;} }
 }

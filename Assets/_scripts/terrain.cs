@@ -13,7 +13,7 @@ public class terrain : MonoBehaviour {
 
 	private GameObject[] floor = new GameObject[20];
 
-	private float blockSize = 10.0f;
+	public float blockSize = 10.0f;
 	private float start_x = 71.9F;
 	private float start_y = -30.0F;
 	private float last;
@@ -23,7 +23,6 @@ public class terrain : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
 		tile = GameObject.Find("ground");
 
 		for (int i = 0; i < floor.Length; i++) {

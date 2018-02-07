@@ -53,7 +53,9 @@
   <ItemGroup>
      <Compile Include="Assets\_scripts\block.cs" />
      <Compile Include="Assets\_scripts\block_deserializer.cs" />
+     <Compile Include="Assets\_scripts\collider.cs" />
      <Compile Include="Assets\_scripts\exhibits.cs" />
+     <Compile Include="Assets\_scripts\maze_generator.cs" />
      <Compile Include="Assets\_scripts\move.cs" />
      <Compile Include="Assets\_scripts\terrain.cs" />
  <Reference Include="UnityEngine.UIAutomation">

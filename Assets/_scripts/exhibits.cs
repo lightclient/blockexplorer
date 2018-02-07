@@ -13,9 +13,11 @@ public class exhibits : MonoBehaviour {
 
 	private GameObject[] frames = new GameObject[40];
 
+	public int block_rate;
+
 	private float frameSize = 30.0f;
-	private float start_x = 0.0f;
-	private float start_y = 7.0f;
+	private float start_x = -10.0f;
+	private float start_y = 20.0f;
 	private float last;
 
 	private int rightMost;
@@ -49,8 +51,8 @@ public class exhibits : MonoBehaviour {
 			for (int i = 0; i < frames.Length; i++) {
 				frames [i] = Instantiate (frame, new Vector3 ((start_x - i * frameSize), start_y, 0), Quaternion.identity);
 
-				frames [i].GetComponent<block> ().height = latestBlock.height - i;
-				Debug.Log (frames [i].GetComponent<block> ().height);
+				frames [i].GetComponentInChildren<block> ().height = latestBlock.height - i * block_rate;
+				Debug.Log (frames [i].GetComponentInChildren<block> ().height);
 
 				rightMost = 0;
 				leftMost = frames.Length - 1;
@@ -76,7 +78,7 @@ public class exhibits : MonoBehaviour {
 			frames[rightMost].transform.position = new Vector3(new_x, new_y, new_z);
 
 			// update block number
-			frames[rightMost].GetComponent<block>().height = frames[leftMost].GetComponent<block>().height - 1;
+			frames[rightMost].GetComponent<block>().height = frames[leftMost].GetComponent<block>().height - block_rate;
 			frames[rightMost].GetComponent<block> ().initialized = false;
 
 			leftMost = rightMost;
@@ -93,7 +95,7 @@ public class exhibits : MonoBehaviour {
 			frames[leftMost].transform.position = new Vector3(new_x, new_y, new_z);
 
 			// update block number
-			frames[leftMost].GetComponent<block>().height = frames[rightMost].GetComponent<block>().height + 1;
+			frames[leftMost].GetComponent<block>().height = frames[rightMost].GetComponent<block>().height + block_rate;
 			frames[leftMost].GetComponent<block> ().initialized = false;
 
 			rightMost = leftMost;
