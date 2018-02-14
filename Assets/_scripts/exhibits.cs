@@ -24,8 +24,13 @@ public class exhibits : MonoBehaviour {
 	private int leftMost;
 	private block_deserializer latestBlock;
 
+	private GameObject exhibit_holder;
+
 	// Use this for initialization
 	void Start () {
+
+		exhibit_holder = new GameObject ();
+		exhibit_holder.name = "Exhibits";
 
 		// construct and send request
 		StartCoroutine(GetBlockData());
@@ -52,6 +57,7 @@ public class exhibits : MonoBehaviour {
 				frames [i] = Instantiate (frame, new Vector3 ((start_x - i * frameSize), start_y, 0), Quaternion.identity);
 
 				frames [i].GetComponentInChildren<block> ().height = latestBlock.height - i * block_rate;
+				frames [i].transform.parent = exhibit_holder.transform;
 				Debug.Log (frames [i].GetComponentInChildren<block> ().height);
 
 				rightMost = 0;

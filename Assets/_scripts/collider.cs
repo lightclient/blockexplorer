@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class collider : MonoBehaviour {
-	bool gameCanStart;
+
+	public GameManager game_manager;
+	public bool gameCanStart;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -12,20 +15,30 @@ public class collider : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (gameCanStart && Input.GetKeyDown ("space")) {
-			Debug.Log ("start her uppppp");
-		}	
+			gameCanStart = false;
+
+			block b = GetComponent<block> ();
+			Debug.Log (b.height + " weeee");
+
+			game_manager.enter_mini_game(b.height);
+
+			Debug.Log ("contact with block: " + b.height);
+
+		}
 	}
 
 
 	void OnTriggerEnter2D(Collider2D other) {
-		if(other.gameObject.tag == "player")
-		gameCanStart = true;
+		if (other.gameObject.tag == "Player") {
+			//Debug.Log (other.name);
+			gameCanStart = true;
+		}
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
-		if(other.gameObject.tag == "player")
-			
-		gameCanStart = false;
+		if (other.gameObject.tag == "Player") {
+			gameCanStart = false;
+		}
 	}
 		
 }

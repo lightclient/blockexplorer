@@ -55,8 +55,13 @@
      <Compile Include="Assets\_scripts\block_deserializer.cs" />
      <Compile Include="Assets\_scripts\collider.cs" />
      <Compile Include="Assets\_scripts\exhibits.cs" />
-     <Compile Include="Assets\_scripts\maze_generator.cs" />
-     <Compile Include="Assets\_scripts\move.cs" />
+     <Compile Include="Assets\_scripts\GameManager.cs" />
+     <Compile Include="Assets\_scripts\maze\HuntAndKillMazeAlgorithm.cs" />
+     <Compile Include="Assets\_scripts\maze\MazeAlgorithm.cs" />
+     <Compile Include="Assets\_scripts\maze\MazeCell.cs" />
+     <Compile Include="Assets\_scripts\maze\MazeLoader.cs" />
+     <Compile Include="Assets\_scripts\maze\ProceduralNumberGenerator.cs" />
+     <Compile Include="Assets\_scripts\MoveLogic.cs" />
      <Compile Include="Assets\_scripts\terrain.cs" />
  <Reference Include="UnityEngine.UIAutomation">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
