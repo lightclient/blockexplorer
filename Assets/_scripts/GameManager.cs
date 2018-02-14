@@ -16,32 +16,29 @@ public class GameManager : MonoBehaviour {
 	public float speed;
 
 	// controls to enter mini game
-	public GameObject ml;
-	public bool in_mini_game = false;
+	private GameObject ml;
+	public bool in_mini_game;
 	public Vector3 last_camera_position;
-
+	public Vector3 last_player_position;
 
 	// privates
 	// bool isGrounded = false; 
 	// int jumpCount = 0;
-	Rigidbody2D sprite;
+	private Rigidbody2D sprite;
 
 
 	void Start() {
 		sprite = player.transform.GetComponent<Rigidbody2D> ();
-		Debug.Log ("********* " + ml);
+		in_mini_game = false;
 	}
 		
 	void FixedUpdate() {
-
 		if (!in_mini_game) {
 			// if the sprite is at the boundary, move the camera with the sprite
 			if (sprite.position.x > (leftBound + camera.transform.position.x)) {
 				camera.transform.position = new Vector3 (sprite.position.x + rightBound, 0.0f, zBound);
-				Debug.Log ("********* " + ml);
 			} else if (sprite.position.x < (rightBound + camera.transform.position.x)) {
 				camera.transform.position = new Vector3 (sprite.position.x + leftBound, 0.0f, zBound);
-				enter_mini_game (5);
 			}
 
 			// clamp the sprite's position to the boundary triggers
@@ -54,7 +51,7 @@ public class GameManager : MonoBehaviour {
 		} else {
 			
 			// in mini game ...
-			if (Input.GetKeyDown("a")) {
+			if (Input.GetKeyDown(KeyCode.Q)) {
 				exit_mini_game ();
 			}
 		}
@@ -64,19 +61,26 @@ public class GameManager : MonoBehaviour {
 
 		// save the current camera position to come back to later
 		last_camera_position = new Vector3(camera.transform.position.x, camera.transform.position.y, camera.transform.position.z);
+		last_player_position = sprite.transform.position;
 
-		Debug.Log (ml);
-		Debug.Log ("********* " + ml);
-		//MazeLoader ml = maze_loader.GetComponent<MazeLoader> ();
-		//ml.generate(1);
+		MazeLoader maze_loader = GameObject.Find("maze_manager").GetComponent<MazeLoader> ();
+		maze_loader.generate(height);
 
 		in_mini_game = true;
 
 		camera.transform.position = new Vector3 (0.0f, 200.0f, -10.0f);
+
+		sprite.transform.position = new Vector3 (-50.63f, 229.9f);
+		sprite.transform.localScale = new Vector3 (2.5f, 2.5f, 2.5f);
+		sprite.gravityScale = 0.0f;
 	}
 
 	public void exit_mini_game() {
 		in_mini_game = false;
 		camera.transform.position = last_camera_position;
+		sprite.transform.position = last_player_position;
+		sprite.transform.localScale = new Vector3 (3.0f, 3.0f, 3.0f);
+		sprite.gravityScale = 50.0f;
+		//camera.transform.position = new Vector3 (0.0f, 0.0f, -10.0f);
 	}
 }

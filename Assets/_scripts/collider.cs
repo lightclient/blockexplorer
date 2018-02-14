@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class collider : MonoBehaviour {
 
-	public GameManager game_manager;
+	public GameObject game_manager;
 	public bool gameCanStart;
 
 	// Use this for initialization
@@ -20,7 +20,7 @@ public class collider : MonoBehaviour {
 			block b = GetComponent<block> ();
 			Debug.Log (b.height + " weeee");
 
-			game_manager.enter_mini_game(b.height);
+			game_manager.GetComponent<GameManager>().enter_mini_game(b.height);
 
 			Debug.Log ("contact with block: " + b.height);
 

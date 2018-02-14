@@ -260,7 +260,7 @@ MonoBehaviour:
   frame: {fileID: 1549713489}
   leftExhibitCacheArea: -100
   rightExhibitCacheArea: 100
-  block_rate: 1
+  block_rate: 8000
 --- !u!114 &249278872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,9 +278,9 @@ MonoBehaviour:
   leftBound: 30
   jumpPower: 3
   speed: 70
-  ml: {fileID: 2079806017}
   in_mini_game: 0
   last_camera_position: {x: 0, y: 0, z: 0}
+  last_player_position: {x: 0, y: 0, z: 0}
 --- !u!1 &351760190
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,9 +290,10 @@ GameObject:
   m_Component:
   - component: {fileID: 351760192}
   - component: {fileID: 351760191}
+  - component: {fileID: 351760193}
   m_Layer: 0
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -354,6 +355,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!61 &351760193
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 351760190}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &574892916
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,7 +470,6 @@ GameObject:
   m_Component:
   - component: {fileID: 734579919}
   - component: {fileID: 734579918}
-  - component: {fileID: 734579920}
   - component: {fileID: 734579922}
   - component: {fileID: 734579921}
   - component: {fileID: 734579923}
@@ -512,26 +537,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &734579920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 734579917}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 276ce24269afe4c5b930c99226fc7040, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 574892916}
-  player: {fileID: 0}
-  rightBound: -30
-  leftBound: 30
-  jumpPower: 3
-  speed: 70
-  ml: {fileID: 0}
-  in_mini_game: 0
-  last_camera_position: {x: 0, y: 0, z: 0}
 --- !u!50 &734579921
 Rigidbody2D:
   serializedVersion: 4
@@ -588,12 +593,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d716539a8e072480c93326e3adcc4a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 0}
-  player: {fileID: 0}
+  game_manager_object: {fileID: 249278868}
   rightBound: -30
   leftBound: 30
   jumpPower: 3
   speed: 70
+  maze_speed: 45
 --- !u!1001 &1174678452
 Prefab:
   m_ObjectHideFlags: 0
@@ -733,7 +738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e1045be70c1946368bfc80c02d4b549, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_manager: {fileID: 734579920}
+  game_manager: {fileID: 249278868}
   gameCanStart: 0
 --- !u!61 &1549713493
 BoxCollider2D:

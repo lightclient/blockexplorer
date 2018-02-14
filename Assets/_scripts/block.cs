@@ -23,8 +23,33 @@ public class block : MonoBehaviour {
 
 	public bool initialized = false;
 
+	private Color[] one;
+	private Color[] two;
+	private Color[] three;
+	private Color[] four;
+
 	// Use this for initialization
 	void Start () {
+		one = new Color[2] { Color.black, Color.white };
+		two = new Color[4] { Color.black, Color.white, Color.gray, Color.blue };
+		three = new Color[8] { Color.black, Color.white, Color.blue, Color.green, Color.red, Color.yellow, Color.magenta, Color.cyan };
+		four = new Color[16] { Color.black, 
+							  Color.white, 
+							  Color.blue, 
+							  Color.green, 
+							  Color.red, 
+							  Color.yellow,
+							  Color.magenta,
+							  Color.cyan,
+			                  new Color(0.0f, 0.9f, 0.5f),
+							  new Color(0.5f, 0.1f, 0.9f),
+							  new Color(0.6f, 0.0f, 0.0f),
+							  new Color(1.0f, 1.0f, 0.0f),
+							  new Color(1.0f, 0.6f, 1.0f),
+							  new Color(0.8f, 0.9f, 0.5f),
+							  new Color(0.0f, 0.9f, 0.5f),
+							  new Color(0.0f, 0.9f, 0.5f)
+		};
 	}
 	
 	// Update is called once per frame
@@ -99,7 +124,10 @@ public class block : MonoBehaviour {
 					first = (int)Mathf.Floor (Random.Range (0.0f, 3.0f));
 					second = (int)Mathf.Floor (Random.Range (0.0f, 3.0f));
 				}
+					
+				int bits_of_color = Mathf.Clamp( (getLeadingZeros () - 8) + (transactions == 1 ? 0 : 1) , 1, 8);
 
+				// Debug.Log (height + " " + previous_block_hash + " bits -> " + bits_of_color);
 
 				Random.InitState (height);
 
@@ -109,15 +137,43 @@ public class block : MonoBehaviour {
 					for (int x = 0; x < resolution; x++) {
 						Vector3 point = Vector3.Lerp(point0, point1, (x + 0.5f) * stepSize);
 
-						float[] c = new float[3];
+						Color pixel_color = Color.black;
 
-						c[0] = Random.Range (0.0f, 1.0f);
-						c[1] = Random.Range (0.0f, 1.0f);
-						c[2] = Random.Range (0.0f, 1.0f);
+						if(bits_of_color > 3) {
 
-						c[first] = c[second];
+							float[] c = new float[3];
 
-						tex.SetPixel(x, y, new Color(c[0], c[1], c[2]));
+							int c1 = ( (int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow(2, bits_of_color)) ) << (8 - bits_of_color) );
+							int c2 = ( (int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow(2, bits_of_color)) ) << (8 - bits_of_color) );
+							int c3 = ( (int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow(2, bits_of_color)) ) << (8 - bits_of_color) );
+
+							c[0] = c1 / 255.0f;
+							c[1] = c2 / 255.0f;
+							c[2] = c3 / 255.0f;
+
+							c[first] = c[second];
+
+							pixel_color = new Color (c [0], c [1], c [2]);
+						} else {
+
+							switch(bits_of_color) {
+
+							case 1:
+								pixel_color = one [(int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow (2, bits_of_color)))];
+								break;
+							case 2:
+								pixel_color = two [(int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow (2, bits_of_color)))];
+								break;
+							case 3:
+								pixel_color = three [(int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow (2, bits_of_color)))];
+								break;
+							case 4:
+								pixel_color = four [(int)Mathf.Floor (Random.Range (0.0f, Mathf.Pow (2, bits_of_color)))];
+								break;
+							}
+						}
+
+						tex.SetPixel(x, y, pixel_color);
 					}
 				}
 					
@@ -137,4 +193,12 @@ public class block : MonoBehaviour {
 
 	}
 
+
+	int getLeadingZeros() {
+		for (int i = 0; i < previous_block_hash.Length; i++)
+			if (previous_block_hash[i].ToString() != "0".ToString())
+				return i;
+
+		return next_block_hash.Length;
+	}
 }

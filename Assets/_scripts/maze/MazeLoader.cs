@@ -26,10 +26,10 @@ public class MazeLoader : MonoBehaviour {
 	}
 
 	public void generate(int height) {
-		/*Destroy (wall_holder);
+		Destroy (wall_holder);
 		initialize_maze ();
 		MazeAlgorithm ma = new HuntAndKillMazeAlgorithm (maze_cells, height);
-		ma.CreateMaze ();*/
+		ma.CreateMaze ();
 	}
 
 	void initialize_maze() {
