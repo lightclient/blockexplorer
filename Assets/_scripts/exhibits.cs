@@ -54,14 +54,14 @@ public class exhibits : MonoBehaviour {
 			frame.transform.position = new Vector3 (0, 100, 0);
 
 			for (int i = 0; i < frames.Length; i++) {
-				frames [i] = Instantiate (frame, new Vector3 ((start_x - i * frameSize), start_y, 0), Quaternion.identity);
+				frames [i] = Instantiate (frame, new Vector3 ((start_x + i * frameSize), start_y, 0), Quaternion.identity);
 
-				frames [i].GetComponentInChildren<block> ().height = latestBlock.height - i * block_rate;
+				frames [i].GetComponentInChildren<block> ().height = i * block_rate;
 				frames [i].transform.parent = exhibit_holder.transform;
 				Debug.Log (frames [i].GetComponentInChildren<block> ().height);
 
-				rightMost = 0;
-				leftMost = frames.Length - 1;
+				leftMost = 0;
+				rightMost = frames.Length - 1;
 			}
 		}
 	}
@@ -74,7 +74,17 @@ public class exhibits : MonoBehaviour {
 		// only move terrian if the camera is moving
 		// diff < 0 means moving left
 		// diff > 0 means moving right
-		if (diff < 0 && frames[rightMost].transform.position.x > (camera.transform.position.x + rightExhibitCacheArea + frameSize) ) {
+		if (diff != last) {
+			Debug.Log ("diff: " + diff);
+			Debug.Log ("right most pos: " + frames [rightMost].transform.position.x);
+			Debug.Log ("right cache pos: " + (camera.transform.position.x + rightExhibitCacheArea + frameSize));
+
+			Debug.Log ("left most pos: " + frames [leftMost].transform.position.x);
+			Debug.Log ("left cache pos: " + (camera.transform.position.x + leftExhibitCacheArea - frameSize));
+		}
+
+		if (diff < 0 && frames[rightMost].transform.position.x > (camera.transform.position.x + rightExhibitCacheArea + frameSize) && 
+			0 <= frames[leftMost].GetComponent<block>().height - block_rate ) {
 
 			// moving left
 			float new_x = frames[leftMost].transform.position.x - frameSize;
@@ -83,15 +93,17 @@ public class exhibits : MonoBehaviour {
 
 			frames[rightMost].transform.position = new Vector3(new_x, new_y, new_z);
 
+			Debug.Log ("new left block: " + (frames [leftMost].GetComponent<block> ().height - block_rate));
+
 			// update block number
 			frames[rightMost].GetComponent<block>().height = frames[leftMost].GetComponent<block>().height - block_rate;
 			frames[rightMost].GetComponent<block> ().initialized = false;
 
 			leftMost = rightMost;
-			rightMost += 1;
+			rightMost -= 1;
 
 		} else if (diff > 0 && frames[leftMost].transform.position.x < (camera.transform.position.x + leftExhibitCacheArea - frameSize) && 
-			latestBlock.height != frames[rightMost].GetComponent<block>().height ) {
+			latestBlock.height >= frames[rightMost].GetComponent<block>().height + block_rate ) {
 
 			// moving right
 			float new_x = frames[rightMost].transform.position.x + frameSize;
@@ -104,17 +116,19 @@ public class exhibits : MonoBehaviour {
 			frames[leftMost].GetComponent<block>().height = frames[rightMost].GetComponent<block>().height + block_rate;
 			frames[leftMost].GetComponent<block> ().initialized = false;
 
+			Debug.Log ("new right block: " + (frames [leftMost].GetComponent<block> ().height - block_rate));
+
 			rightMost = leftMost;
-			leftMost -= 1;
+			leftMost += 1;
 		}
 
 
-		if (leftMost < 0) {
-			leftMost = frames.Length - 1;
+		if (leftMost >= frames.Length) {
+			leftMost = 0;
 		}
 
-		if (rightMost >= frames.Length) {
-			rightMost = 0;
+		if (rightMost < 0) {
+			rightMost = frames.Length - 1;
 		}
 
 

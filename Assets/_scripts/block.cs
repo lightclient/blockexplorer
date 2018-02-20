@@ -56,7 +56,7 @@ public class block : MonoBehaviour {
 	void Update () {
 
 
-		if (!initialized && height > 0) {
+		if (!initialized && height >= 0) {
 			StartCoroutine (GetBlockData ());
 			initialized = true;
 		}

@@ -260,7 +260,7 @@ MonoBehaviour:
   frame: {fileID: 1549713489}
   leftExhibitCacheArea: -100
   rightExhibitCacheArea: 100
-  block_rate: 8000
+  block_rate: 500
 --- !u!114 &249278872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,7 +430,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 133
   orthographic: 1
   orthographic size: 35
   m_Depth: -1
