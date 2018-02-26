@@ -44,3 +44,5 @@
 /Users/Matt/Desktop/blockexplorer/block explorer/Temp/bin/Debug/Unity.Cecil.Mdb.dll
 /Users/Matt/Desktop/blockexplorer/block explorer/Temp/bin/Debug/UnityEditor.iOS.Extensions.Xcode.dll
 /Users/Matt/Desktop/blockexplorer/block explorer/Temp/bin/Debug/UnityEditor.iOS.Extensions.Xcode.xml
+/Users/Matt/Desktop/blockexplorer/block explorer/Temp/bin/Debug/UnityEditor.WebGL.Extensions.dll
+/Users/Matt/Desktop/blockexplorer/block explorer/Temp/bin/Debug/UnityEditor.WindowsStandalone.Extensions.dll
