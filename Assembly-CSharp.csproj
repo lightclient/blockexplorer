@@ -57,7 +57,9 @@
      <Compile Include="Assets\_scripts\Main Logic\GameManager.cs" />
      <Compile Include="Assets\_scripts\Main Logic\MoveLogic.cs" />
      <Compile Include="Assets\_scripts\Main Logic\Terrain.cs" />
+     <Compile Include="Assets\_scripts\Mini-Game\CoinCollider.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\HUDManager.cs" />
+     <Compile Include="Assets\_scripts\Mini-Game\MiniGameLogic.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\MiniGameManager.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\MiniGameMoveLogic.cs" />
      <Compile Include="Assets\_scripts\Support\Block.cs" />

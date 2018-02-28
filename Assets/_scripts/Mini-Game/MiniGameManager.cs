@@ -6,8 +6,11 @@ public class MiniGameManager : MonoBehaviour {
 
 	public GameObject player;
 	public GameObject board;
+	public GameObject coin;
+
 	public bool in_mini_game = false;
 
+	private GameObject coin_holder;
 
 	private Block current_block;
 	private float[,] grid;
@@ -19,47 +22,22 @@ public class MiniGameManager : MonoBehaviour {
 	private float size = 7.0f;
 
 	private float upper_bound = 156.0f;
-	private float lower_bound = 93.53827f;
+	private float lower_bound = 94.0f;
 	private float left_bound = -4.298332f;
-	private float right_bound = 58.7f;
+	private float right_bound = 52.0f;
 
 	// Use this for initialization
 	void Start () {
 		pos = player.transform.position;
 		pos2 = player.transform.position;
 		tr = player.transform;
+
+		coin.transform.position = new Vector3 (250.0f, 250.0f);
+		coin_holder = GameObject.Find("coin_holder");
 	}
 
 	// Update is called once per frame
 	void Update () {
-
-		float horizontalMovement = Input.GetAxis ("Horizontal");
-		Vector3 newScale = player.transform.localScale;
-		if ((horizontalMovement < 0 && newScale.x > 0) || (horizontalMovement > 0 && newScale.x < 0)) {
-			newScale.x *= -1;
-			player.transform.localScale = newScale;
-		}
-
-		float verticalMovement = Input.GetAxis ("Vertical");
-
-		if (horizontalMovement > 0 && pos.x < right_bound && tr.position == pos) {
-			pos2 = pos;
-			pos += Vector3.right * size;
-		}
-		else if (horizontalMovement < 0 && pos.x > left_bound && tr.position == pos) {
-			pos2 = pos;
-			pos += Vector3.left * size;
-		}
-		else if (verticalMovement > 0 && pos.y < upper_bound && tr.position == pos) {
-			pos2 = pos;
-			pos += Vector3.up * size;
-		}
-		else if (verticalMovement < 0 && pos.y > lower_bound && tr.position == pos) {
-			pos2 = pos;
-			pos += Vector3.down * size;
-		}
-			
-		tr.position = Vector3.MoveTowards(tr.position, pos, Time.deltaTime * speed);
 	}
 
 	public void PrepareLevel(Block b) {
@@ -75,14 +53,32 @@ public class MiniGameManager : MonoBehaviour {
 
 		board.transform.localScale = new Vector3 (700, 700, 10);
 
-		// get grid
-		grid = eg.GenerateGrid(b);
+		// debug
+		// grid = eg.GenerateGrid(b);
+		// PrintGrid (grid);
 
-		PrintGrid (grid);
+		// place coins
+		Random.InitState (b.height);
+
+		for (int i = 0; i < 3; i++) {
+			GameObject new_coin = Instantiate(coin, new Vector3(0.0f, 0.0f), Quaternion.identity);
+			new_coin.transform.localScale = new Vector3 (0.2f, 0.2f);
+			new_coin.transform.parent = coin_holder.transform;
+
+			float row = Mathf.Floor (Random.Range (0.0f, 10.0f));
+			float col = Mathf.Floor (Random.Range (0.0f, 10.0f));
+
+			new_coin.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
+		}
 
 		in_mini_game = true;
 	}
 
+	public void CleanUpLevel() {
+		foreach (Transform child in coin_holder.transform) {
+			GameObject.Destroy(child.gameObject);
+		}
+	}
 
 	public void SetCurrentBlock(Block b) { current_block = b; }
 

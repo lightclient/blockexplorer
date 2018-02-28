@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour {
 	public void exit_mini_game() {
 		MiniGameManager minigame_manager = GameObject.Find("MiniGameManager").GetComponent<MiniGameManager> ();
 		minigame_manager.in_mini_game = false;
+		minigame_manager.CleanUpLevel ();
 
 		in_mini_game = false;
 		camera.transform.position = last_camera_position;
