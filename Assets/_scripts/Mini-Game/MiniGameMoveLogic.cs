@@ -16,6 +16,9 @@ public class MiniGameMoveLogic : MonoBehaviour {
 	private float left_bound = -4.298332f;
 	private float right_bound = 52.0f;
 
+	enum Direction { Up, Down, Left, Right };
+	private Direction current_direction;
+
 	void Start() {
 		pos = transform.position;
 		pos2 = transform.position;
@@ -35,24 +38,31 @@ public class MiniGameMoveLogic : MonoBehaviour {
 
 			float verticalMovement = Input.GetAxis ("Vertical");
 
-			if(horizontalMovement == 0 && verticalMovement == 0) {
-				pos2 = pos;
+
+			if (horizontalMovement > 0) {
+				current_direction = Direction.Right;
+			}
+			else if (horizontalMovement < 0) {
+				current_direction = Direction.Left;
+			}
+			else if (verticalMovement > 0) {
+				current_direction = Direction.Up;
+			}
+			else if (verticalMovement < 0) {
+				current_direction = Direction.Down;
 			}
 
-			if (horizontalMovement > 0 && pos.x < right_bound && transform.position == pos) {
-				pos2 = pos;
+
+			if (current_direction == Direction.Right && pos.x < right_bound && transform.position == pos) {
 				pos += Vector3.right * size;
 			}
-			else if (horizontalMovement < 0 && pos.x > left_bound && transform.position == pos) {
-				pos2 = pos;
+			else if (current_direction == Direction.Left && pos.x > left_bound && transform.position == pos) {
 				pos += Vector3.left * size;
 			}
-			else if (verticalMovement > 0 && pos.y < upper_bound && transform.position == pos) {
-				pos2 = pos;
+			else if (current_direction == Direction.Up && pos.y < upper_bound && transform.position == pos) {
 				pos += Vector3.up * size;
 			}
-			else if (verticalMovement < 0 && pos.y > lower_bound && transform.position == pos) {
-				pos2 = pos;
+			else if (current_direction == Direction.Down && pos.y > lower_bound && transform.position == pos) {
 				pos += Vector3.down * size;
 			}
 
@@ -62,8 +72,8 @@ public class MiniGameMoveLogic : MonoBehaviour {
 	}
 
 	// collision detection 
-//	void  OnCollisionEnter2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; jumpCount = 0; } }
-//	void  OnCollisionStay2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; jumpCount = 0; } }
-//	void  OnCollisionExit2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = false;} }
+	//	void  OnCollisionEnter2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; jumpCount = 0; } }
+	//	void  OnCollisionStay2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = true; jumpCount = 0; } }
+	//	void  OnCollisionExit2D (Collision2D other) { if (other.collider.tag == "Ground") { isGrounded = false;} }
 }
 
