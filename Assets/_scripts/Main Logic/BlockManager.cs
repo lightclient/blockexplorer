@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public class BlockManager : MonoBehaviour {
 
 	public GameObject frame;
+	public GameObject check;
 
 	public int height = -1;
 	public Block block;
@@ -27,6 +28,15 @@ public class BlockManager : MonoBehaviour {
 		if (!initialized && height != -1) {
 			StartCoroutine (GetBlockData ());
 			initialized = true;
+		}
+	}
+
+	public void completeBlock() {
+		SpriteRenderer sr = check.GetComponent<SpriteRenderer> ();
+		if (PlayerPrefs.GetInt (block.height.ToString ()) == 1) {
+			sr.enabled = true;
+		} else {
+			sr.enabled = false;
 		}
 	}
 
@@ -55,6 +65,8 @@ public class BlockManager : MonoBehaviour {
 				// update the text mesh
 				TextMesh text = GetComponentInChildren<TextMesh>();
 				text.text = "# " + block.height;
+
+				completeBlock ();
 
 				// generate art
 				SpriteRenderer current = GetComponentInChildren<SpriteRenderer>();

@@ -7,6 +7,8 @@ public class MiniGameManager : MonoBehaviour {
 	public GameObject player;
 	public GameObject board;
 	public GameObject coin;
+	public GameObject game_manager_object;
+	public GameManager game_manager;
 
 	public bool in_mini_game = false;
 
@@ -32,18 +34,29 @@ public class MiniGameManager : MonoBehaviour {
 		pos2 = player.transform.position;
 		tr = player.transform;
 
+		game_manager = game_manager_object.GetComponent<GameManager> ();
+
 		coin.transform.position = new Vector3 (250.0f, 250.0f);
 		coin_holder = GameObject.Find("coin_holder");
 	}
 
 	// Update is called once per frame
 	void Update () {
+		if (in_mini_game && coin_holder.transform.childCount <= 0) {
+			game_manager.exit_mini_game (true);
+		}
+	}
+
+	public int height() {
+		return current_block.height;
 	}
 
 	public void PrepareLevel(Block b) {
 
+		current_block = b;
+
 		// update hud
-		HUDManager hud_manager = GameObject.Find("HUDManager").GetComponent<HUDManager> ();
+		MiniGameHUDManager hud_manager = GameObject.Find("MiniGameHUDManager").GetComponent<MiniGameHUDManager> ();
 		hud_manager.UpdateHUD (b);
 
 		// setup board
@@ -60,13 +73,21 @@ public class MiniGameManager : MonoBehaviour {
 		// place coins
 		Random.InitState (b.height);
 
+		List<float[]> points = new List<float[]> ();
 		for (int i = 0; i < 3; i++) {
 			GameObject new_coin = Instantiate(coin, new Vector3(0.0f, 0.0f), Quaternion.identity);
-			new_coin.transform.localScale = new Vector3 (0.2f, 0.2f);
+			new_coin.transform.localScale = new Vector3 (15.0f, 15.0f);
 			new_coin.transform.parent = coin_holder.transform;
 
-			float row = Mathf.Floor (Random.Range (0.0f, 10.0f));
-			float col = Mathf.Floor (Random.Range (0.0f, 10.0f));
+			float row = 0.0f;
+			float col = 0.0f;
+
+			do {
+				row = Mathf.Floor (Random.Range (0.0f, 10.0f));
+				col = Mathf.Floor (Random.Range (0.0f, 10.0f));
+			} while (isCoinPlacementCollision (row, col, points));
+
+			points.Add( new float[] {col, row} );
 
 			new_coin.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
 		}
@@ -78,9 +99,22 @@ public class MiniGameManager : MonoBehaviour {
 		foreach (Transform child in coin_holder.transform) {
 			GameObject.Destroy(child.gameObject);
 		}
+
+		in_mini_game = false;
 	}
 
 	public void SetCurrentBlock(Block b) { current_block = b; }
+
+	private bool isCoinPlacementCollision(float row, float col, List<float[]> points) {
+		foreach (var point in points) {
+			if(point[0] == col && point[1] == row) {
+				Debug.Log ("COLLISION");
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	void PrintGrid(float[,] grid) {
 		string g = "";

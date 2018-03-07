@@ -58,6 +58,11 @@ public class Exhibits : MonoBehaviour {
 
 				frames [i].GetComponentInChildren<BlockManager>().height = i * block_rate;
 				frames [i].transform.parent = exhibit_holder.transform;
+
+				if (PlayerPrefs.GetInt ((i * block_rate).ToString ()) == 1) {
+					//frame
+				}
+
 				Debug.Log (frames [i].GetComponentInChildren<BlockManager> ().height);
 
 				leftMost = 0;
