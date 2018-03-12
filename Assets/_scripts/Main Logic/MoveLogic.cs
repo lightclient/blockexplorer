@@ -19,10 +19,13 @@ public class MoveLogic : MonoBehaviour {
 	private Rigidbody2D sprite;
 	private Vector3 last_position;
 
+	private Animator animator;
+
 
 	void Start() {
 		sprite = transform.GetComponent<Rigidbody2D> ();
 		game_manager = game_manager_object.GetComponent<GameManager> ();
+		animator = gameObject.GetComponent<Animator>();
 	}
 
 	void FixedUpdate() {
@@ -40,6 +43,12 @@ public class MoveLogic : MonoBehaviour {
 			if ((horizontalMovement < 0 && newScale.x > 0) || (horizontalMovement > 0 && newScale.x < 0)) {
 				newScale.x *= -1;
 				transform.localScale = newScale;
+			}
+
+			if (horizontalMovement != 0) {
+				animator.SetTrigger ("startWalk");
+			} else {
+				animator.SetTrigger ("endWalk");
 			}
 
 			// add lateral velocity to the sprite

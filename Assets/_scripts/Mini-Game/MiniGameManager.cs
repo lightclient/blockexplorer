@@ -6,13 +6,17 @@ public class MiniGameManager : MonoBehaviour {
 
 	public GameObject player;
 	public GameObject board;
-	public GameObject coin;
+
 	public GameObject game_manager_object;
 	public GameManager game_manager;
 
 	public bool in_mini_game = false;
 
+	public GameObject coin;
 	private GameObject coin_holder;
+
+	public GameObject enemy;
+	private GameObject enemy_holder;
 
 	private Block current_block;
 	private float[,] grid;
@@ -38,6 +42,10 @@ public class MiniGameManager : MonoBehaviour {
 
 		coin.transform.position = new Vector3 (250.0f, 250.0f);
 		coin_holder = GameObject.Find("coin_holder");
+
+		enemy.SetActive (false);
+		enemy.transform.position = new Vector3 (250.0f, 250.0f);
+		enemy_holder = GameObject.Find("enemy_holder");
 	}
 
 	// Update is called once per frame
@@ -91,12 +99,35 @@ public class MiniGameManager : MonoBehaviour {
 
 			new_coin.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
 		}
+			
+		for (int i = 0; i < 3; i++) {
+			GameObject new_enemy = Instantiate(enemy, new Vector3(0.0f, 0.0f), Quaternion.identity);
+			new_enemy.transform.localScale = new Vector3 (15.0f, 15.0f);
+			new_enemy.transform.parent = enemy_holder.transform;
+
+			float row = 0.0f;
+			float col = 0.0f;
+
+			do {
+				row = Mathf.Floor (Random.Range (0.0f, 10.0f));
+				col = Mathf.Floor (Random.Range (0.0f, 10.0f));
+			} while (isCoinPlacementCollision (row, col, points));
+
+			points.Add( new float[] {col, row} );
+
+			new_enemy.SetActive(true);
+			new_enemy.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
+		}
 
 		in_mini_game = true;
 	}
 
 	public void CleanUpLevel() {
 		foreach (Transform child in coin_holder.transform) {
+			GameObject.Destroy(child.gameObject);
+		}
+
+		foreach (Transform child in enemy_holder.transform) {
 			GameObject.Destroy(child.gameObject);
 		}
 

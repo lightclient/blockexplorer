@@ -13,9 +13,10 @@ public class CoinCollider : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log ("coin");	
-		PlayerPrefs.SetInt ( "coins_collected", PlayerPrefs.GetInt ("coins_collected", 0) + 1 );
-		GameObject.Destroy (gameObject);
+		if (other.tag == "Player") {
+			PlayerPrefs.SetInt ("coins_collected", PlayerPrefs.GetInt ("coins_collected", 0) + 1);
+			GameObject.Destroy (gameObject);
+		}
 	}
 
 }
