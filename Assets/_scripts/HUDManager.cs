@@ -9,6 +9,8 @@ public class HUDManager : MonoBehaviour {
 	public Text completed_levels;
 	public Text coins_collected;
 
+	private float period = 0.0f;
+
 	// Use this for initialization
 	void Start () {
 
@@ -17,18 +19,21 @@ public class HUDManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		lives.text            = CreateTextLabel ( PlayerPrefs.GetInt ("lives", 3), 2 );
-		completed_levels.text = CreateTextLabel ( PlayerPrefs.GetInt ("completed_levels", 0), 7 );
-		coins_collected.text  = CreateTextLabel ( PlayerPrefs.GetInt ("coins_collected", 0 ), 7 );
+
+		// update text every 10th of a second
+		if (period > 0.1) {
+			lives.text            = CreateTextLabel ( PlayerPrefs.GetInt ("lives", 3), 2 );
+			completed_levels.text = CreateTextLabel ( PlayerPrefs.GetInt ("completed_levels", 0), 7 );
+			coins_collected.text  = CreateTextLabel ( PlayerPrefs.GetInt ("coins_collected", 0 ), 7 );
+
+			period = 0;
+		}
+
+		period += UnityEngine.Time.deltaTime;
 
 	}
 
 	string CreateTextLabel(int c, int p) {
-
-		//string text = c.ToString ().PadLeft (7, '0');
-		//string formatted = text.Substring(0,1) + "" + text.Substring(1,3) + "" + text.Substring(1,3);
-
 		return c.ToString ().PadLeft (p, '0');
 	}
 }

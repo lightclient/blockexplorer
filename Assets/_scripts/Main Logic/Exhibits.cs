@@ -22,21 +22,118 @@ public class Exhibits : MonoBehaviour {
 
 	private int rightMost;
 	private int leftMost;
-	private Block latestBlock;
+	public Block latestBlock;
 
 	private GameObject exhibit_holder;
 
+	private GameManager game_manager;
+	private Terrain terrain_manager;
+
 	// Use this for initialization
 	void Start () {
+
+		game_manager    = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		terrain_manager = GameObject.Find ("GameManager").GetComponent<Terrain> ();
 
 		exhibit_holder = new GameObject ();
 		exhibit_holder.name = "Exhibits";
 
 		// construct and send request
-		StartCoroutine(GetBlockData());
+		StartCoroutine(GetBlockData(0));
 	}
 
-	IEnumerator GetBlockData() {
+	public void teleport(int height) {
+
+		/*
+		Transform tMin = null;
+		float minDist = Mathf.Infinity;
+		Vector3 currentPos = transform.position;
+		foreach (Transform t in exhibit_holder.transform)
+		{
+			float dist = Vector3.Distance(t.position, currentPos);
+			if (dist < minDist)
+			{
+				tMin = t;
+				minDist = dist;
+			}
+		}
+
+		int closest_height = tMin.gameObject.GetComponent<BlockManager> ().height;
+		int closest_i = 0;
+
+		for (int i = 0; i < frames.Length; i++) {
+			if (frames [(leftMost + i) % frames.Length].GetComponentInChildren<BlockManager> ().height == closest_height) {
+				closest_i = i;
+				break;
+			}
+		}
+		*/
+
+		foreach (Transform t in exhibit_holder.transform) {
+			GameObject.Destroy (t.gameObject);
+		}
+
+		// determine which frames will be the left and right most after teleport
+		int leftMostHeight = ((height - (frames.Length / 2) * block_rate) < 0) ? 0 : (height - (frames.Length / 2) * block_rate);
+		int rightMostHeight = ((height + (frames.Length / 2) * block_rate) > latestBlock.height) ? latestBlock.height : (height + (frames.Length / 2) * block_rate);
+
+		// if we're at the latest block, then the left most block will need to be updated
+		leftMostHeight = rightMostHeight == latestBlock.height ? (leftMostHeight - frames.Length * block_rate) : leftMostHeight;
+
+
+		Debug.Log ("left most: " + leftMostHeight);
+		Debug.Log ("right most: " + rightMostHeight);
+
+		Vector3 position_to_jump_to = new Vector3 (0.0f, 0.0f);
+
+		frame.transform.position = new Vector3 (0, 90, 0);
+
+		for (int i = 0; i < frames.Length; i++) {
+			frames [i] = Instantiate (frame, new Vector3 ((start_x + i * frameSize), start_y, 0), Quaternion.identity);
+
+			frames [i].GetComponentInChildren<BlockManager>().height = (i * block_rate + leftMostHeight);
+			frames [i].transform.parent = exhibit_holder.transform;
+
+			if (frames [i].GetComponentInChildren<BlockManager> ().height == height) {
+				position_to_jump_to = frames [i].transform.position;
+			}
+
+			if (PlayerPrefs.GetInt ((i * block_rate).ToString ()) == 1) {
+				//frame
+			}
+
+			Debug.Log ("what it should be: " + (i * block_rate + leftMostHeight) );
+			Debug.Log ("what it is :" + frames [i].GetComponentInChildren<BlockManager> ().height);
+
+			leftMost = 0;
+			rightMost = frames.Length - 1;
+		}
+		position_to_jump_to.x += frameSize / 2 - frameSize / 4;
+		terrain_manager.TeleportTerrain (position_to_jump_to);
+		game_manager.player.transform.position = position_to_jump_to;
+
+		Vector3 new_camera_pos = camera.transform.position;
+		new_camera_pos.x = position_to_jump_to.x;
+		camera.transform.position = new_camera_pos;
+
+		/*
+		for (int i = 0; i < frames.Length; i++) {
+			//frames [i] = Instantiate (frame, new Vector3 ((start_x + i * frameSize), start_y, 0), Quaternion.identity);
+
+			frames [(leftMost + i) % frames.Length].GetComponentInChildren<BlockManager>().height = (i-closest_i) * block_rate + height;
+			frames [(leftMost + i) % frames.Length].GetComponentInChildren<BlockManager>().initialized = false;
+			frames [(leftMost + i) % frames.Length].transform.parent = exhibit_holder.transform;
+
+			if (PlayerPrefs.GetInt ((i * block_rate).ToString ()) == 1) {
+				//frame
+			}
+
+			Debug.Log (frames [(leftMost + i) % frames.Length].GetComponentInChildren<BlockManager> ().height);
+		}
+		*/
+	}
+
+	IEnumerator GetBlockData(int start) {
 		UnityWebRequest www = UnityWebRequest.Get("https://bitaps.com/api/block/latest");
 		yield return www.SendWebRequest();
 
@@ -56,7 +153,7 @@ public class Exhibits : MonoBehaviour {
 			for (int i = 0; i < frames.Length; i++) {
 				frames [i] = Instantiate (frame, new Vector3 ((start_x + i * frameSize), start_y, 0), Quaternion.identity);
 
-				frames [i].GetComponentInChildren<BlockManager>().height = i * block_rate;
+				frames [i].GetComponentInChildren<BlockManager>().height = i * block_rate + start;
 				frames [i].transform.parent = exhibit_holder.transform;
 
 				if (PlayerPrefs.GetInt ((i * block_rate).ToString ()) == 1) {

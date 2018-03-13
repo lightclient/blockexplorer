@@ -15,10 +15,10 @@ public class MiniGameManager : MonoBehaviour {
 	public bool in_mini_game = false;
 
 	public GameObject coin;
-	private GameObject coin_holder;
+	public GameObject coin_holder;
 
 	public GameObject enemy;
-	private GameObject enemy_holder;
+	public GameObject enemy_holder;
 
 	private Block current_block;
 	private float[,] grid;
@@ -29,31 +29,31 @@ public class MiniGameManager : MonoBehaviour {
 	private Transform tr;
 	private float size = 7.0f;
 
-	private float upper_bound = 156.0f;
-	private float lower_bound = 94.0f;
-	private float left_bound = -4.298332f;
-	private float right_bound = 52.0f;
+	public float upper_bound = 156.0f;
+	public float lower_bound = 94.0f;
+	public float left_bound = -4.298332f;
+	public float right_bound = 52.0f;
 
 	public bool playing = false;
 
 	// Use this for initialization
 	void Start () {
-		pos = player.transform.position;
-		pos2 = player.transform.position;
-		tr = player.transform;
-
 		game_manager = game_manager_object.GetComponent<GameManager> ();
 
+		// move items off screen ( lol didn't know what prefabs were )
 		coin.transform.position = new Vector3 (250.0f, 250.0f);
 		coin_holder = GameObject.Find("coin_holder");
 
 		enemy.SetActive (false);
 		enemy.transform.position = new Vector3 (250.0f, 250.0f);
 		enemy_holder = GameObject.Find("enemy_holder");
+		//////////////////////////////////////////////////////////////
 	}
 
 	// Update is called once per frame
 	void Update () {
+
+		// exit minigame if player wins (i.e. collects all coins)
 		if (in_mini_game && coin_holder.transform.childCount <= 0) {
 			ExitGame (true);
 		}
@@ -74,10 +74,30 @@ public class MiniGameManager : MonoBehaviour {
 		// get difficulty -- between 8 (easiest) and 16 (latest)
 		int difficulty = GetLeadingZeros (b);
 
+		// place player
+		Vector3 mPos = Camera.main.ViewportToWorldPoint (new Vector3 (1, 0, 0));
+		mPos.x -= 10 * size - (size / 2);
+		mPos.y += 10 * size - (size / 2);
+		player.transform.position = new Vector3( mPos.x, mPos.y);
+
+		GameObject.Find("player").GetComponent<MiniGameMoveLogic> ().pos = player.transform.position;
+
+		// set boundaries
+		Vector3 p = Camera.main.ViewportToWorldPoint (new Vector3 (1, 0, 0));
+
+
+		lower_bound = p.y + size;
+		right_bound = p.x - size;
+
+		p.x -= 10 * size;
+		p.y += 10 * size;
+
+		upper_bound = p.y - size;
+		left_bound = p.x + size;
 
 		// update hud
 		MiniGameHUDManager hud_manager = GameObject.Find("MiniGameHUDManager").GetComponent<MiniGameHUDManager> ();
-		hud_manager.UpdateHUD (b);
+		hud_manager.SetHUD (b);
 
 		// setup board
 		Image current = board.GetComponent<Image>();
@@ -85,7 +105,10 @@ public class MiniGameManager : MonoBehaviour {
 		ExhibitGenerator eg = new ExhibitGenerator();
 		current.sprite = eg.GenerateArt(b);
 
-		//board.transform.localScale = new Vector3 (700, 700, 10);
+		// place board for any aspect ratio
+		Vector3 board_position = Camera.main.ViewportToWorldPoint (new Vector3 (1, 0, 0));
+		board_position.y += 35;
+		board.transform.position = new Vector3( board_position.x, board_position.y);
 
 		// debug
 		// grid = eg.GenerateGrid(b);
@@ -103,6 +126,7 @@ public class MiniGameManager : MonoBehaviour {
 			float row = 0.0f;
 			float col = 0.0f;
 
+			// find an unoccupied area of the board
 			do {
 				row = Mathf.Floor (Random.Range (0.0f, 10.0f));
 				col = Mathf.Floor (Random.Range (0.0f, 10.0f));
@@ -110,7 +134,12 @@ public class MiniGameManager : MonoBehaviour {
 
 			points.Add( new float[] {col, row} );
 
-			new_coin.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
+			// set coin position
+			Vector3 cpos = Camera.main.ViewportToWorldPoint (new Vector3 (1, 0, 0));
+			cpos.x -= (col + 1) * size - (size / 2);
+			cpos.y += (row + 1) * size - (size / 2);
+
+			new_coin.transform.position = new Vector3( cpos.x, cpos.y );
 		}
 			
 		// place enemies
@@ -122,6 +151,7 @@ public class MiniGameManager : MonoBehaviour {
 			float row = 0.0f;
 			float col = 0.0f;
 
+			// find an unoccupied area of the board
 			do {
 				row = Mathf.Floor (Random.Range (0.0f, 10.0f));
 				col = Mathf.Floor (Random.Range (0.0f, 10.0f));
@@ -132,21 +162,33 @@ public class MiniGameManager : MonoBehaviour {
 			// set enemy attributes
 			new_enemy.SetActive(true);
 
+			EnemyLogic el = new_enemy.GetComponent<EnemyLogic> ();
+			el.upper_bound = upper_bound;
+			el.lower_bound = lower_bound;
+			el.right_bound = right_bound;
+			el.left_bound = left_bound;
+
+			// set how powerful the enemy is based on the difficulty of the block
 			if (difficulty <= 8) {
-				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (0.0f, 20.0f);
-				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (10.0f, 50.0f);
+				el.savage_level = Random.Range (0.0f, 20.0f);
+				el.wander_level = Random.Range (10.0f, 50.0f);
 			} else if (difficulty < 12) {
-				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (20.0f, 60.0f);
-				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (30.0f, 80.0f);
+				el.savage_level = Random.Range (20.0f, 60.0f);
+				el.wander_level = Random.Range (30.0f, 80.0f);
 			} else if (difficulty < 16) {
-				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (50.0f, 90.0f);
-				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (50.0f, 100.0f);
+				el.savage_level = Random.Range (50.0f, 90.0f);
+				el.wander_level = Random.Range (50.0f, 100.0f);
 			} else {
-				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (80.0f, 100.0f);
-				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (70.0f, 100.0f);
+				el.savage_level = Random.Range (80.0f, 100.0f);
+				el.wander_level = Random.Range (70.0f, 100.0f);
 			}
 
-			new_enemy.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
+			// set enemy position
+			Vector3 epos = Camera.main.ViewportToWorldPoint (new Vector3 (1, 0, 0));
+			epos.x -= (col + 1) * size - (size / 2);
+			epos.y += (row + 1) * size - (size / 2);
+
+			new_enemy.transform.position = new Vector3( epos.x, epos.y );
 		}
 
 		in_mini_game = true;
@@ -161,6 +203,7 @@ public class MiniGameManager : MonoBehaviour {
 			GameObject.Destroy(child.gameObject);
 		}
 
+		player.GetComponent<Animator> ().enabled = false;
 
 		playing = false;
 		in_mini_game = false;

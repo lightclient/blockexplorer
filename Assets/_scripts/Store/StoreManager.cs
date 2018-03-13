@@ -5,35 +5,51 @@ using UnityEngine.UI;
 
 public class StoreManager : MonoBehaviour {
 
-	public Text lives_label, coins_label, armor_label, freeze_blast_label, item_pricing;
+	public Text lives_label, coins_label, armor_label, freeze_blast_label, item_pricing, teleport_confirm;
 
 	//public string armor, freeze_blast, extra_life, teleport;
 
 	public Button armor_upgrade_btn, freeze_blast_upgrade_btn, extra_life_btn, teleport_btn;
 
-	public GameObject canvas;
+	public GameObject canvas, teleport_menu;
+
+	public InputField input_block;
+
+	private Exhibits exhibits;
+
+	private float period = 0.0f;
 
 	// Use this for initialization
 	void Start () {
+		exhibits = GameObject.Find("GameManager").GetComponent<Exhibits>();
 		UpdateItemList ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		int coins = PlayerPrefs.GetInt ("coins_collected", 0);
 
-		// build lives , coins label
-		lives_label.text = CreateTextLabel ( PlayerPrefs.GetInt ("lives", 3), 2 );
-		coins_label.text = CreateTextLabel ( coins, 7 );
-		armor_label.text = CreateTextLabel ( PlayerPrefs.GetInt ("armor", 0), 2 );
-		freeze_blast_label.text = CreateTextLabel ( PlayerPrefs.GetInt ("freeze", 0), 2 );
+		// update text every 10th of a second
+		if (period > 0.1) {
+			
+			int coins = PlayerPrefs.GetInt ("coins_collected", 0);
 
-		// check whether buttons should be active
-		armor_upgrade_btn.interactable        = coins > ArmorCost();
-		freeze_blast_upgrade_btn.interactable = coins > FreezeBlastCost();
-		extra_life_btn.interactable           = coins > ExtraLifeCost();
-		teleport_btn.interactable             = coins > TeleportCost();
+			// build lives , coins label
+			lives_label.text = CreateTextLabel ( PlayerPrefs.GetInt ("lives", 3), 2 );
+			coins_label.text = CreateTextLabel ( coins, 7 );
+			armor_label.text = CreateTextLabel ( PlayerPrefs.GetInt ("armor", 0), 2 );
+			freeze_blast_label.text = CreateTextLabel ( PlayerPrefs.GetInt ("freeze", 0), 2 );
+
+			// check whether buttons should be active
+			armor_upgrade_btn.interactable        = coins > ArmorCost();
+			freeze_blast_upgrade_btn.interactable = coins > FreezeBlastCost();
+			extra_life_btn.interactable           = coins > ExtraLifeCost();
+			teleport_btn.interactable             = coins > TeleportCost();
+
+			UpdateItemList ();
+		}
+
+		period += UnityEngine.Time.deltaTime;
 			
 	}
 
@@ -53,6 +69,9 @@ public class StoreManager : MonoBehaviour {
 		// upgrade armor
 		PlayerPrefs.SetInt ("armor", PlayerPrefs.GetInt("armor", 0) + 1);
 
+		// update item list
+		UpdateItemList();
+
 	}
 
 	public void BuyFreezeBlastUpgrade() {
@@ -61,7 +80,7 @@ public class StoreManager : MonoBehaviour {
 		PlayerPrefs.SetInt ("coins_collected", PlayerPrefs.GetInt ("coins_collected", 0) - FreezeBlastCost());
 
 		// upgrade freeze blast
-		PlayerPrefs.SetInt ("freeze", PlayerPrefs.GetInt("armor", 0) + 1);
+		PlayerPrefs.SetInt ("freeze", PlayerPrefs.GetInt("freeze", 0) + 1);
 
 		// update item list
 		UpdateItemList();
@@ -84,8 +103,45 @@ public class StoreManager : MonoBehaviour {
 
 	}
 
+	public void BuyTeleport() {
+		// validate input
+		// TODO
+
+		int block = 0;
+
+		if (int.TryParse(input_block.text, out block) && ( 0 <= block && block <= exhibits.latestBlock.height)) {
+			// you know that the parsing attempt
+			// was successful
+				Debug.Log("success");
+		} else {
+			Debug.Log("fail");
+		}
+			
+
+		Debug.Log (input_block.text);
+
+		// subtract cost from balance
+		//PlayerPrefs.SetInt ("coins_collected", PlayerPrefs.GetInt ("coins_collected", 0) - TeleportCost());
+
+		// add 1 to purchase count
+		PlayerPrefs.SetInt ("teleports_purchased", PlayerPrefs.GetInt ("teleports_purchased", 0) + 1);
+
+		exhibits.teleport (block);
+
+		HideTeleportMenu ();
+		HideStore ();
+	}
+
+	public void ShowTeleportMenu() {
+		teleport_confirm.text = "This operation cannot be undone. In order to perform another teleportation, more \\itcoin will need to be aquired. Please enter the block you would like to teleport to in box below. The latest block is " + exhibits.latestBlock.height + ".";
+		teleport_menu.SetActive(true);
+	}
+
+	public void HideTeleportMenu() {
+		teleport_menu.SetActive (false);
+	}
+
 	public void ShowStore() {
-		Debug.Log ("hello");
 		canvas.SetActive (true);
 	}
 
@@ -112,6 +168,7 @@ public class StoreManager : MonoBehaviour {
 		} else {
 			return b + ". . . . . . . . . . . \\ " + c.ToString ();
 		}
+			
 	}
 
 	private string FreezeBlastString() {
@@ -136,13 +193,13 @@ public class StoreManager : MonoBehaviour {
 		int c = ExtraLifeCost ();
 
 		if (c % 100000 != c) {
-			return b + " . . . . . . \\ " + c.ToString (); 
+			return b + ". . . . . . \\ " + c.ToString (); 
 		} else if (c % 10000 != c) {
-			return b + ". . . . . . . \\ " + c.ToString ();
+			return b + " . . . . . . \\ " + c.ToString ();
 		} else if (c % 1000 != c) {
-			return b + " . . . . . . . \\ " + c.ToString ();
+			return b + ". . . . . . . \\ " + c.ToString ();
 		} else if (c % 100 != c) {
-			return b + ". . . . . . . . \\ " + c.ToString ();
+			return b + " . . . . . . . \\ " + c.ToString ();
 		} else {
 			return b + ". . . . . . . . \\ " + c.ToString ();
 		}

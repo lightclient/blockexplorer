@@ -15,7 +15,7 @@ ff05dcdf90651c3d98a9cad3df5e471e UnityEngine.Timeline.dll:UnityEngine.Timeline.C
 31aaf521b3ef8699466676591ea0efd4 UnityEngine.Timeline.dll:UnityEngine.Timeline.GroupTrack
 31aaf521b3ef8699466676591ea0efd4 UnityEngine.Timeline.dll:UnityEngine.Timeline.PlayableTrack
 df374c01140c2d578bf70cbd60073d1d UnityEngine.Timeline.dll:UnityEngine.Timeline.TimelineAsset
-64867946b2179584547bea4f803f8feb Assembly-CSharp.dll:.StoreManager
+98e5f55959a175463195f21e81c9b63e Assembly-CSharp.dll:.StoreManager
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.MiniGameLogic
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
@@ -49,7 +49,7 @@ c63db43c730fa2cbb8ca07de15898cb6 UnityEngine.UI.dll:UnityEngine.UI.Toggle
 f61c0793411f10cf5fbfa1473fef5ef2 UnityEngine.UI.dll:UnityEngine.UI.ToggleGroup
 86d36c43c53541d667100dc90b89cfba UnityEngine.UI.dll:UnityEngine.EventSystems.TouchInputModule
 1b8c02d0aa82fbf036a2b9b2d713eec3 UnityEngine.UI.dll:UnityEngine.UI.VerticalLayoutGroup
-a7bbefdf85031e146bcbe4611747467e Assembly-CSharp.dll:.GameManager
+54dedc34bc7770a4ecbf6a7feaf50130 Assembly-CSharp.dll:.GameManager
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 49cd62a578efc0a599b810a2b66cd49c UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -136,9 +136,9 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 3f32f08a64daf40b09ed864d96fe3840 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransform
 73843688b51256aed059f049c540bca8 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformChild
 528ea1fd7c01796fc60c4e2f172ea229 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
-78443e4d894b1c956f3a711a3506c3ee Assembly-CSharp.dll:.MiniGameManager
-32386ec552ef230dc42e5d153cc8c258 Assembly-CSharp.dll:.Exhibits
-09a6687fabf8358251a1987ed88abbd3 Assembly-CSharp.dll:.EnemyLogic
+1dc104d4e5b98fbcd72c9b89ad700d4a Assembly-CSharp.dll:.MiniGameManager
+30416f6594ac7f29c442bd78919e9b7a Assembly-CSharp.dll:.Exhibits
+9768d0618b3ba83ced4277e761f7340b Assembly-CSharp.dll:.EnemyLogic
 547d3d9e10c77e2061cfe1b5279657ed Assembly-CSharp.dll:.MoveLogic
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback
 96d0fbde9fd209878a0a291f82c9bcdd UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.PlaymodeTestsController
@@ -151,7 +151,7 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
 2c188f53cef4edb9908da5ff07022b1d Assembly-CSharp.dll:.MiniGameMoveLogic
-1a8586e1e6663b9af2e5c58d3d9409aa Assembly-CSharp.dll:.MiniGameHUDManager
+a1301fb8e7789054de4bfafee33adb97 Assembly-CSharp.dll:.MiniGameHUDManager
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 9172fe94c72f81787a1bbc2c6898d9d1 Assembly-CSharp.dll:.HUDManager
 95435e619efbbf264b0b0a71bd57f6c2 Assembly-CSharp.dll:.MainMenuManager

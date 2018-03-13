@@ -19,12 +19,15 @@ public class EnemyLogic : MonoBehaviour {
 	enum Direction { Up, Down, Left, Right };
 	private Direction current_direction;
 
-	private float speed = 20.0f;
+	public float upper_bound = 156.0f;
+	public float lower_bound = 94.0f;
+	public float left_bound = -4.298332f;
+	public float right_bound = 52.0f;
+
+	public float speed = 20.0f;
+
 	private float size = 7.0f;
-	private float upper_bound = 156.0f;
-	private float lower_bound = 94.0f;
-	private float left_bound = -4.298332f;
-	private float right_bound = 52.0f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -33,14 +36,24 @@ public class EnemyLogic : MonoBehaviour {
 
 		mini_game_manager = mini_game_manager_object.GetComponent<MiniGameManager> ();
 		animator = gameObject.GetComponent<Animator>();
+
+		animator.enabled = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		if (!frozen && mini_game_manager.playing) {
+
+			// after enemies start moving, their animations should begin looping
+			if (!animator.enabled) {
+				animator.enabled = true;
+			}
+
+			// determine if the enemy will change course this block
 			if (transform.position == pos && Random.Range (0.0f, 100.0f) < wander_level) {
 
+				// determine if the enemy will chase after the player
 				if (Random.Range (0.0f, 100.0f) < savage_level) {
 					MoveTowardPlayer ();
 				} else {
@@ -48,7 +61,7 @@ public class EnemyLogic : MonoBehaviour {
 				}
 			}
 
-			// choose new direction if we hit a wall
+			// choose new direction if enemy hit a wall
 			if(	( current_direction == Direction.Right && pos.x >= right_bound ) || 
 				( current_direction == Direction.Left  && pos.x <= left_bound  ) || 
 				( current_direction == Direction.Down  && pos.y <= lower_bound ) ||
@@ -60,6 +73,7 @@ public class EnemyLogic : MonoBehaviour {
 
 			Vector3 newScale = transform.localScale;
 
+			// set new position vector , animation based on new direction
 			if (current_direction == Direction.Right && pos.x < right_bound && transform.position == pos) {
 				pos += Vector3.right * size;
 
@@ -82,23 +96,28 @@ public class EnemyLogic : MonoBehaviour {
 				animator.SetInteger ("direction", 2);
 			}
 				
+			// move towards the new position target
 			transform.position = Vector3.MoveTowards (transform.position, pos, Time.deltaTime * speed);
 		}
 
 	}
 
 
+	// public method to call freezer coroutine
 	public void freeze(int waitTime) {
 		StartCoroutine(_freeze(waitTime));
 	}
 
+	// freezer coroutine ... stops enemy from moving
 	private IEnumerator _freeze(int waitTime)
 	{
 		frozen = true;
+		animator.enabled = false;
 		yield return new WaitForSeconds(waitTime);
 		frozen = false;
 	}
 
+	// determine the optimal direction towards the player
 	void MoveTowardPlayer() {
 		float x = Mathf.Abs (mini_game_manager.player.transform.position.x - transform.position.x);
 		float y = Mathf.Abs (mini_game_manager.player.transform.position.y - transform.position.y);
@@ -110,6 +129,7 @@ public class EnemyLogic : MonoBehaviour {
 		}
 	}
 
+	// choose a random new direction, but don't go in the opposite direction enemy is currently moving
 	void ChooseNewDirection() {
 
 		Direction new_dir;
@@ -121,6 +141,7 @@ public class EnemyLogic : MonoBehaviour {
 		current_direction = new_dir;
 	}
 
+	// determine what the opposite of a given direction is
 	Direction opposite(Direction dir) {
 
 		if (dir == Direction.Right) {
@@ -137,23 +158,34 @@ public class EnemyLogic : MonoBehaviour {
 		return Direction.Down;
 	}
 
+	// collision logic
 	void OnTriggerEnter2D(Collider2D other) {
-		if (other.tag == "Player") {
-			// Debug.Log ("die bitch");
 
-			// trying to avoid a double death
-			if (mini_game_manager.in_mini_game) {
+		// determine what collided with the enemy
+		if (other.tag == "Player") {
+			// player collides with enemy
+
+			if (PlayerPrefs.GetInt ("hits", 0) < (PlayerPrefs.GetInt ("armor", 0) + 1) && mini_game_manager.in_mini_game) {
+				// add hit
+				PlayerPrefs.SetInt ("hits", PlayerPrefs.GetInt ("hits", 0) + 1);
+			} else if (mini_game_manager.in_mini_game) {
+				// die
 				mini_game_manager.ExitGame (false);
 			}
-		} else if (other.tag == "Enemy") {
-			// Debug.Log ("encountered another enemy");
-		} else if (other.tag == "Freeze") {
-			Debug.Log ("gg mate");
-			freeze (5);
-		} else {
-			Debug.Log ("da fuq dis : " + other.tag);
-		}
 
+		
+		
+		} else if (other.tag == "Enemy") {
+			// enemy collides with another enemy
+
+
+
+		
+		} else if (other.tag == "Freeze") {
+			// enemy collides with freeze blast
+
+			freeze (5);
+		}
 
 	}
 

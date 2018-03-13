@@ -31,6 +31,7 @@ public class MoveLogic : MonoBehaviour {
 	void FixedUpdate() {
 
 		if (!game_manager.in_mini_game) {
+			
 			// jump logic
 			if (Input.GetKey (KeyCode.Space) && jumpCount < 2) {
 				sprite.AddForce (Vector3.up * (jumpPower * sprite.mass * sprite.gravityScale * 20.0f));
@@ -45,16 +46,16 @@ public class MoveLogic : MonoBehaviour {
 				transform.localScale = newScale;
 			}
 
+			// if walking, play walking animation
 			if (horizontalMovement != 0) {
-				animator.SetTrigger ("startWalk");
+				animator.SetInteger ("walking", 1);
 			} else {
-				animator.SetTrigger ("endWalk");
+				animator.SetInteger ("walking", 0);
 			}
 
 			// add lateral velocity to the sprite
 			Vector3 movement = new Vector3 (horizontalMovement * speed, sprite.velocity.y, 0.0f);
 			sprite.velocity = movement;
-
 		}
 	}
 

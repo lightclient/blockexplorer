@@ -62,7 +62,6 @@
      <Compile Include="Assets\_scripts\Mini-Game\CoinCollider.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\EnemyLogic.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\MiniGameHUDManager.cs" />
-     <Compile Include="Assets\_scripts\Mini-Game\MiniGameLogic.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\MiniGameManager.cs" />
      <Compile Include="Assets\_scripts\Mini-Game\MiniGameMoveLogic.cs" />
      <Compile Include="Assets\_scripts\Store\StoreManager.cs" />
