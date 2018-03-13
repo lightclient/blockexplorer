@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
+
 	public GameObject camera;
 	public GameObject player;
 	public GameObject hud;
@@ -95,15 +96,15 @@ public class GameManager : MonoBehaviour {
 
 			// increase total levels completed, only if level hasn't been completed before
 			if (PlayerPrefs.GetInt (minigame_manager.height ().ToString (), 0) == 0) {
-				PlayerPrefs.SetInt("completed_levels", PlayerPrefs.GetInt("completed_levels",0) + 1);
+				PlayerPrefs.SetInt ("completed_levels", PlayerPrefs.GetInt ("completed_levels", 0) + 1);
 			}
 
 			// set level as completed
-			PlayerPrefs.SetInt (minigame_manager.height ().ToString(), 1);
+			PlayerPrefs.SetInt (minigame_manager.height ().ToString (), 1);
 
 
-
-			GameObject exhibits_holder = GameObject.Find("Exhibits");
+			// find exhibit and set it as complete so it will be updated when we return to the main game
+			GameObject exhibits_holder = GameObject.Find ("Exhibits");
 			foreach (Transform child in exhibits_holder.transform) {
 				
 				BlockManager block_manager = child.GetComponent<BlockManager> ();
@@ -112,6 +113,18 @@ public class GameManager : MonoBehaviour {
 					block_manager.completeBlock ();
 				}
 
+			}
+		} else {
+			// decrease number of lives
+
+			// see if player has any lives left
+			if (PlayerPrefs.GetInt ("lives", 3) == 0) {
+				// game over
+				PlayerPrefs.DeleteAll ();
+
+			} else {
+				// has lives left so decrease count by 1
+				PlayerPrefs.SetInt ("lives", PlayerPrefs.GetInt ("lives", 3) - 1);
 			}
 		}
 

@@ -32,7 +32,7 @@ public class ExhibitGenerator {
 			second = (int)Mathf.Floor (Random.Range (0.0f, 3.0f));
 		}
 
-		int bits_of_color = Mathf.Clamp( (getLeadingZeros (b) - 8) + (b.transactions == 1 ? 0 : 1) , 1, 8);
+		int bits_of_color = Mathf.Clamp( (GetLeadingZeros (b) - 8) + (b.transactions == 1 ? 0 : 1) , 1, 8);
 
 		// Debug.Log (height + " " + previous_block_hash + " bits -> " + bits_of_color);
 
@@ -117,7 +117,7 @@ public class ExhibitGenerator {
 			second = (int)Mathf.Floor (Random.Range (0.0f, 3.0f));
 		}
 
-		int bits_of_color = Mathf.Clamp( (getLeadingZeros (b) - 8) + (b.transactions == 1 ? 0 : 1) , 1, 8);
+		int bits_of_color = Mathf.Clamp( (GetLeadingZeros (b) - 8) + (b.transactions == 1 ? 0 : 1) , 1, 8);
 
 		// Debug.Log (height + " " + previous_block_hash + " bits -> " + bits_of_color);
 
@@ -173,7 +173,7 @@ public class ExhibitGenerator {
 	}
 
 
-	int getLeadingZeros(Block b) {
+	public int GetLeadingZeros(Block b) {
 		for (int i = 0; i < b.previous_block_hash.Length; i++)
 			if (b.previous_block_hash[i].ToString() != "0".ToString())
 				return i;

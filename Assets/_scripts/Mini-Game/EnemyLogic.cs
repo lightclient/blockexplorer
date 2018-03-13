@@ -38,7 +38,7 @@ public class EnemyLogic : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (!frozen) {
+		if (!frozen && mini_game_manager.playing) {
 			if (transform.position == pos && Random.Range (0.0f, 100.0f) < wander_level) {
 
 				if (Random.Range (0.0f, 100.0f) < savage_level) {
@@ -63,23 +63,23 @@ public class EnemyLogic : MonoBehaviour {
 			if (current_direction == Direction.Right && pos.x < right_bound && transform.position == pos) {
 				pos += Vector3.right * size;
 
-				animator.SetTrigger ("side");
+				animator.SetInteger ("direction", 3);
 				newScale.x = Mathf.Abs (newScale.x) * -1;
 				transform.localScale = newScale;
 
 			} else if (current_direction == Direction.Left && pos.x > left_bound && transform.position == pos) {
 				pos += Vector3.left * size;
 
-				animator.SetTrigger ("side");
+				animator.SetInteger ("direction", 3);
 				newScale.x = Mathf.Abs (newScale.x);
 				transform.localScale = newScale;
 
 			} else if (current_direction == Direction.Up && pos.y < upper_bound && transform.position == pos) {
 				pos += Vector3.up * size;
-				animator.SetTrigger ("up");
+				animator.SetInteger ("direction", 1);
 			} else if (current_direction == Direction.Down && pos.y > lower_bound && transform.position == pos) {
 				pos += Vector3.down * size;
-				animator.SetTrigger ("down");
+				animator.SetInteger ("direction", 2);
 			}
 				
 			transform.position = Vector3.MoveTowards (transform.position, pos, Time.deltaTime * speed);
@@ -141,6 +141,10 @@ public class EnemyLogic : MonoBehaviour {
 		if (other.tag == "Player") {
 			// Debug.Log ("die bitch");
 
+			// trying to avoid a double death
+			if (mini_game_manager.in_mini_game) {
+				mini_game_manager.ExitGame (false);
+			}
 		} else if (other.tag == "Enemy") {
 			// Debug.Log ("encountered another enemy");
 		} else if (other.tag == "Freeze") {

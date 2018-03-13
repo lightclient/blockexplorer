@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MiniGameManager : MonoBehaviour {
 
@@ -9,6 +10,7 @@ public class MiniGameManager : MonoBehaviour {
 
 	public GameObject game_manager_object;
 	public GameManager game_manager;
+	private ExhibitGenerator exhibit_generator;
 
 	public bool in_mini_game = false;
 
@@ -32,6 +34,8 @@ public class MiniGameManager : MonoBehaviour {
 	private float left_bound = -4.298332f;
 	private float right_bound = 52.0f;
 
+	public bool playing = false;
+
 	// Use this for initialization
 	void Start () {
 		pos = player.transform.position;
@@ -51,8 +55,12 @@ public class MiniGameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (in_mini_game && coin_holder.transform.childCount <= 0) {
-			game_manager.exit_mini_game (true);
+			ExitGame (true);
 		}
+	}
+
+	public void ExitGame(bool completed) {
+		game_manager.exit_mini_game (completed);
 	}
 
 	public int height() {
@@ -63,16 +71,21 @@ public class MiniGameManager : MonoBehaviour {
 
 		current_block = b;
 
+		// get difficulty -- between 8 (easiest) and 16 (latest)
+		int difficulty = GetLeadingZeros (b);
+
+
 		// update hud
 		MiniGameHUDManager hud_manager = GameObject.Find("MiniGameHUDManager").GetComponent<MiniGameHUDManager> ();
 		hud_manager.UpdateHUD (b);
 
 		// setup board
-		SpriteRenderer current = board.GetComponentInChildren<SpriteRenderer>();
+		Image current = board.GetComponent<Image>();
+		//SpriteRenderer current = board.GetComponentInChildren<SpriteRenderer>();
 		ExhibitGenerator eg = new ExhibitGenerator();
 		current.sprite = eg.GenerateArt(b);
 
-		board.transform.localScale = new Vector3 (700, 700, 10);
+		//board.transform.localScale = new Vector3 (700, 700, 10);
 
 		// debug
 		// grid = eg.GenerateGrid(b);
@@ -100,6 +113,7 @@ public class MiniGameManager : MonoBehaviour {
 			new_coin.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
 		}
 			
+		// place enemies
 		for (int i = 0; i < 3; i++) {
 			GameObject new_enemy = Instantiate(enemy, new Vector3(0.0f, 0.0f), Quaternion.identity);
 			new_enemy.transform.localScale = new Vector3 (15.0f, 15.0f);
@@ -115,7 +129,23 @@ public class MiniGameManager : MonoBehaviour {
 
 			points.Add( new float[] {col, row} );
 
+			// set enemy attributes
 			new_enemy.SetActive(true);
+
+			if (difficulty <= 8) {
+				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (0.0f, 20.0f);
+				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (10.0f, 50.0f);
+			} else if (difficulty < 12) {
+				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (20.0f, 60.0f);
+				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (30.0f, 80.0f);
+			} else if (difficulty < 16) {
+				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (50.0f, 90.0f);
+				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (50.0f, 100.0f);
+			} else {
+				new_enemy.GetComponent<EnemyLogic> ().savage_level = Random.Range (80.0f, 100.0f);
+				new_enemy.GetComponent<EnemyLogic> ().wander_level = Random.Range (70.0f, 100.0f);
+			}
+
 			new_enemy.transform.localPosition = new Vector3 ((float)(col * size), (float)(row * size), 0.0f);
 		}
 
@@ -131,6 +161,8 @@ public class MiniGameManager : MonoBehaviour {
 			GameObject.Destroy(child.gameObject);
 		}
 
+
+		playing = false;
 		in_mini_game = false;
 	}
 
@@ -166,4 +198,11 @@ public class MiniGameManager : MonoBehaviour {
 		Debug.Log (g);
 	}
 
+	int GetLeadingZeros(Block b) {
+		for (int i = 0; i < b.previous_block_hash.Length; i++)
+			if (b.previous_block_hash[i].ToString() != "0".ToString())
+				return i;
+
+		return b.next_block_hash.Length;
+	}
 }
