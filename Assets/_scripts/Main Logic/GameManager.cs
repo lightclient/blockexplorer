@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour {
 	public GameObject player;
 	public GameObject hud;
 
+	public AudioSource source;
+	public AudioClip theme;
+	public AudioClip fall;
+
 	private MiniGameManager minigame_manager;
 
 	// boundary triggers
@@ -29,21 +33,35 @@ public class GameManager : MonoBehaviour {
 	// int jumpCount = 0;
 	private Rigidbody2D sprite;
 
+	private bool transition = false;
+
 	private bool gameover = false;
 	private Vector3 gameover_pos;
 	public GameObject gameover_canvas;
+
+	private Exhibits exhibits;
 
 
 	void Start() {
 		sprite = player.transform.GetComponent<Rigidbody2D> ();
 
+		exhibits = GameObject.Find("GameManager").GetComponent<Exhibits>();
 		minigame_manager = GameObject.Find("MiniGameManager").GetComponent<MiniGameManager> ();
 
 		in_mini_game = false;
+
+		StartCoroutine (StartMusic ());
+	}
+
+	IEnumerator StartMusic() {
+		source.clip = theme;
+		source.loop = true;
+		yield return new WaitForSeconds (0.5f);
+		source.Play ();
 	}
 
 	void Update() {
-		if (!gameover && !in_mini_game) {
+		if (!gameover && !in_mini_game && !transition) {
 			// if the sprite is at the boundary, move the camera with the sprite
 			if (sprite.position.x > (leftBound + camera.transform.position.x)) {
 				camera.transform.position = new Vector3 (sprite.position.x + rightBound, 0.0f, zBound);
@@ -93,80 +111,78 @@ public class GameManager : MonoBehaviour {
 		last_camera_position = new Vector3(camera.transform.position.x, camera.transform.position.y, camera.transform.position.z);
 		last_player_position = sprite.transform.position;
 
+		source.Stop ();
 		camera.transform.position = new Vector3 (0.0f, 125.0f, -10.0f);
 
 		minigame_manager.PrepareLevel (b);
-
-		Debug.Log(PlayerPrefs.HasKey(b.height.ToString()));
 	}
 
 	public void exit_mini_game(bool completed) {
 
+		minigame_manager.playing = false;
 		minigame_manager.in_mini_game = false;
 		in_mini_game = false;
 
-		// reset hits
-		PlayerPrefs.SetInt ("hits", 0);
+		// freeze player
+		minigame_manager.player.GetComponent<Animator> ().enabled = false;
 
-		// reset allowed freeze blasts
-		PlayerPrefs.SetInt ("freeze_blasts", 1 + PlayerPrefs.GetInt ("freeze", 0));
+		// freeze coins
+		foreach (Transform child in minigame_manager.coin_holder.transform) {
+			child.GetComponent<Animator> ().enabled = false;
+		}
+
+		// freeze enemies
+		foreach (Transform child in minigame_manager.enemy_holder.transform) {
+			child.GetComponent<Animator> ().enabled = false;
+		}
 
 		if (completed) {
+			// won level
+			StartCoroutine (BeginWonLevelSequence ());
+		} else if (PlayerPrefs.GetInt ("lives", 3) == 0) {
 
-			// increase total levels completed, only if level hasn't been completed before
-			if (PlayerPrefs.GetInt (minigame_manager.height ().ToString (), 0) == 0) {
-				PlayerPrefs.SetInt ("completed_levels", PlayerPrefs.GetInt ("completed_levels", 0) + 1);
-			}
+			// game over
 
-			// set level as completed
-			PlayerPrefs.SetInt (minigame_manager.height ().ToString (), 1);
+			gameover = true;
+			StartCoroutine (BeginGameOverSequence());
 
-
-			// find exhibit and set it as complete so it will be updated when we return to the main game
-			GameObject exhibits_holder = GameObject.Find ("Exhibits");
-			foreach (Transform child in exhibits_holder.transform) {
-				
-				BlockManager block_manager = child.GetComponent<BlockManager> ();
-
-				if (block_manager.height == minigame_manager.height ()) {
-					block_manager.completeBlock ();
-				}
-
-			}
 		} else {
-			// decrease number of lives
-
-			// see if player has any lives left
-			if (PlayerPrefs.GetInt ("lives", 3) == 0) {
-				// game over
-				gameover = true;
-
-
-				minigame_manager.playing = false;
-
-				// freeze player
-				minigame_manager.player.GetComponent<Animator> ().enabled = false;
-
-				// freeze coins
-				foreach (Transform child in minigame_manager.coin_holder.transform) {
-					child.GetComponent<Animator> ().enabled = false;
-				}
-
-				// freeze enemies
-				foreach (Transform child in minigame_manager.enemy_holder.transform) {
-					child.GetComponent<Animator> ().enabled = false;
-				}
-
-				StartCoroutine (BeginGameOverSequence());
-
-
-				return;
-
-			} else {
-				// has lives left so decrease count by 1
-				PlayerPrefs.SetInt ("lives", PlayerPrefs.GetInt ("lives", 3) - 1);
-			}
+			// lost level
+			StartCoroutine (BeginLostLevelSequence ());
 		}
+	}
+
+	IEnumerator BeginWonLevelSequence() {
+		transition = true;
+
+		yield return new WaitForSeconds(0.5f);
+
+		// increase total levels completed, only if level hasn't been completed before
+		if (PlayerPrefs.GetInt (minigame_manager.height ().ToString (), 0) == 0) {
+			PlayerPrefs.SetInt ("completed_levels", PlayerPrefs.GetInt ("completed_levels", 0) + 1);
+		}
+
+		// set level as completed
+		PlayerPrefs.SetInt (minigame_manager.height ().ToString (), 1);
+
+
+		// find exhibit and set it as complete so it will be updated when we return to the main game
+		GameObject exhibits_holder = GameObject.Find ("Exhibits");
+		foreach (Transform child in exhibits_holder.transform) {
+
+			BlockManager block_manager = child.GetComponent<BlockManager> ();
+
+			if (block_manager.height == minigame_manager.height ()) {
+				block_manager.completeBlock ();
+			}
+
+		}
+
+		SendToMainArea ();
+	}
+
+	public void SendToMainArea() {
+		StartCoroutine(StartMusic ());
 
 		minigame_manager.CleanUpLevel ();
 
@@ -175,16 +191,31 @@ public class GameManager : MonoBehaviour {
 		canvas.enabled = true;
 
 		// reset camera & sprite position
-		camera.transform.position = last_camera_position;
-		sprite.transform.position = last_player_position;
-
 		sprite.gravityScale = 50.0f;
+		sprite.transform.position = last_player_position;
+		camera.transform.position = last_camera_position;
+
+		transition = false;
+	}
+
+	IEnumerator BeginLostLevelSequence() {
+		transition = true;
+
+		yield return new WaitForSeconds(0.5f);
+
+		// has lives left so decrease count by 1
+		PlayerPrefs.SetInt ("lives", PlayerPrefs.GetInt ("lives", 3) - 1);
+
+		SendToMainArea ();
 	}
 
 	IEnumerator BeginGameOverSequence() {
 		yield return new WaitForSeconds(1);
 
 		minigame_manager.player.GetComponent<Rigidbody2D> ().gravityScale = 30.0f;
+		source.clip = fall;
+		source.loop = false;
+		source.Play ();
 
 		yield return new WaitForSeconds (0.10f);
 
@@ -201,20 +232,17 @@ public class GameManager : MonoBehaviour {
 
 	public void RestartGame() {
 
+		StartCoroutine (StartMusic ());
+
 		PlayerPrefs.DeleteAll ();
 
 		minigame_manager.CleanUpLevel ();
 
-		// enable hud
-		Canvas canvas = hud.GetComponentInChildren<Canvas>();
-		canvas.enabled = true;
-
-		// reset camera & sprite position
-		gameover = false;
-		gameover_canvas.SetActive (false);
-		camera.transform.position = last_camera_position;
-		sprite.transform.position = last_player_position;
+		exhibits.teleport (0);
 
 		gameover_canvas.GetComponent<Animator> ().SetTrigger ("exit-game-over");
+		gameover_canvas.SetActive (false);
+
+		SendToMainArea ();
 	}
 }

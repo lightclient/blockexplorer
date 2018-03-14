@@ -15,7 +15,7 @@ public class Terrain : MonoBehaviour {
 
 	public float blockSize = 10.0f;
 	private float start_x = 71.9F;
-	private float start_y = -30.0F;
+	private float start_y = -30.5F;
 	private float last;
 
 	private int rightMost;

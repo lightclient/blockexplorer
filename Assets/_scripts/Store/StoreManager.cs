@@ -106,6 +106,9 @@ public class StoreManager : MonoBehaviour {
 	public void BuyTeleport() {
 		// validate input
 		// TODO
+		if (input_block.text == "") {
+			return;
+		}
 
 		int block = 0;
 
@@ -115,13 +118,14 @@ public class StoreManager : MonoBehaviour {
 				Debug.Log("success");
 		} else {
 			Debug.Log("fail");
+			return;
 		}
 			
 
 		Debug.Log (input_block.text);
 
 		// subtract cost from balance
-		//PlayerPrefs.SetInt ("coins_collected", PlayerPrefs.GetInt ("coins_collected", 0) - TeleportCost());
+		PlayerPrefs.SetInt ("coins_collected", PlayerPrefs.GetInt ("coins_collected", 0) - TeleportCost());
 
 		// add 1 to purchase count
 		PlayerPrefs.SetInt ("teleports_purchased", PlayerPrefs.GetInt ("teleports_purchased", 0) + 1);

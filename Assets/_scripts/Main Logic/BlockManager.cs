@@ -18,14 +18,17 @@ public class BlockManager : MonoBehaviour {
 	private Color[] three;
 	private Color[] four;
 
+	private TextMesh text;
+
 	// Use this for initialization
 	void Start () {
-
+		text = GetComponentInChildren<TextMesh>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (!initialized && height != -1) {
+			text.text = "# " + height;
 			StartCoroutine (GetBlockData ());
 			initialized = true;
 		}
@@ -62,10 +65,6 @@ public class BlockManager : MonoBehaviour {
 				// deserialize data from api into blok class
 				block = JsonUtility.FromJson<Block>(www.text);
 
-				// update the text mesh
-				TextMesh text = GetComponentInChildren<TextMesh>();
-				text.text = "# " + block.height;
-
 				completeBlock ();
 
 				// generate art
@@ -74,6 +73,9 @@ public class BlockManager : MonoBehaviour {
 				ExhibitGenerator eg = new ExhibitGenerator();
 				current.sprite = eg.GenerateArt(block);
 
+				current.color = Color.white;
+
+				frame.GetComponent<Animator> ().enabled = false;
 				frame.transform.localScale = new Vector3 (100, 100, 10);
 			}
 

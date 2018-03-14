@@ -44,45 +44,19 @@ public class Exhibits : MonoBehaviour {
 
 	public void teleport(int height) {
 
-		/*
-		Transform tMin = null;
-		float minDist = Mathf.Infinity;
-		Vector3 currentPos = transform.position;
-		foreach (Transform t in exhibit_holder.transform)
-		{
-			float dist = Vector3.Distance(t.position, currentPos);
-			if (dist < minDist)
-			{
-				tMin = t;
-				minDist = dist;
-			}
-		}
-
-		int closest_height = tMin.gameObject.GetComponent<BlockManager> ().height;
-		int closest_i = 0;
-
-		for (int i = 0; i < frames.Length; i++) {
-			if (frames [(leftMost + i) % frames.Length].GetComponentInChildren<BlockManager> ().height == closest_height) {
-				closest_i = i;
-				break;
-			}
-		}
-		*/
 
 		foreach (Transform t in exhibit_holder.transform) {
 			GameObject.Destroy (t.gameObject);
 		}
 
 		// determine which frames will be the left and right most after teleport
-		int leftMostHeight = ((height - (frames.Length / 2) * block_rate) < 0) ? 0 : (height - (frames.Length / 2) * block_rate);
-		int rightMostHeight = ((height + (frames.Length / 2) * block_rate) > latestBlock.height) ? latestBlock.height : (height + (frames.Length / 2) * block_rate);
+		int leftMostHeight = ((height - (frames.Length / 2) * block_rate) < 0) ? -1 : (height - (frames.Length / 2) * block_rate);
+		int rightMostHeight = ((height + (frames.Length / 2) * block_rate) > latestBlock.height) ? latestBlock.height : (height  + (frames.Length / 2) * block_rate);
 
 		// if we're at the latest block, then the left most block will need to be updated
-		leftMostHeight = rightMostHeight == latestBlock.height ? (leftMostHeight - frames.Length * block_rate) : leftMostHeight;
+		leftMostHeight = rightMostHeight == latestBlock.height ? (leftMostHeight - frames.Length / 2 * block_rate) : leftMostHeight;
 
-
-		Debug.Log ("left most: " + leftMostHeight);
-		Debug.Log ("right most: " + rightMostHeight);
+		leftMostHeight += 1;
 
 		Vector3 position_to_jump_to = new Vector3 (0.0f, 0.0f);
 
@@ -94,7 +68,9 @@ public class Exhibits : MonoBehaviour {
 			frames [i].GetComponentInChildren<BlockManager>().height = (i * block_rate + leftMostHeight);
 			frames [i].transform.parent = exhibit_holder.transform;
 
-			if (frames [i].GetComponentInChildren<BlockManager> ().height == height) {
+			Debug.Log ("curr = " + (i * block_rate + leftMostHeight) + " looking for: " + height);
+
+			if ((i * block_rate + leftMostHeight) == height) {
 				position_to_jump_to = frames [i].transform.position;
 			}
 
@@ -102,12 +78,10 @@ public class Exhibits : MonoBehaviour {
 				//frame
 			}
 
-			Debug.Log ("what it should be: " + (i * block_rate + leftMostHeight) );
-			Debug.Log ("what it is :" + frames [i].GetComponentInChildren<BlockManager> ().height);
-
 			leftMost = 0;
 			rightMost = frames.Length - 1;
 		}
+
 		position_to_jump_to.x += frameSize / 2 - frameSize / 4;
 		terrain_manager.TeleportTerrain (position_to_jump_to);
 		game_manager.player.transform.position = position_to_jump_to;

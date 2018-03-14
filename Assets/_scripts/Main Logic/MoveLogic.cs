@@ -21,11 +21,14 @@ public class MoveLogic : MonoBehaviour {
 
 	private Animator animator;
 
+	public AudioSource audio;
+	public AudioClip clip;
 
 	void Start() {
 		sprite = transform.GetComponent<Rigidbody2D> ();
 		game_manager = game_manager_object.GetComponent<GameManager> ();
 		animator = gameObject.GetComponent<Animator>();
+		audio.clip = clip;
 	}
 
 	void FixedUpdate() {
@@ -33,9 +36,10 @@ public class MoveLogic : MonoBehaviour {
 		if (!game_manager.in_mini_game) {
 			
 			// jump logic
-			if (Input.GetKey (KeyCode.Space) && jumpCount < 2) {
+			if (Input.GetKey (KeyCode.Space) && jumpCount < 1) {
 				sprite.AddForce (Vector3.up * (jumpPower * sprite.mass * sprite.gravityScale * 20.0f));
 				jumpCount += 1;
+				audio.Play ();
 			}
 
 			// flip sprite depending on the direction they're moving

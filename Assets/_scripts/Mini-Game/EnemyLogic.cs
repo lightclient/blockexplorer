@@ -28,6 +28,8 @@ public class EnemyLogic : MonoBehaviour {
 
 	private float size = 7.0f;
 
+	public AudioSource audio;
+	public AudioClip hit;
 
 	// Use this for initialization
 	void Start () {
@@ -38,6 +40,8 @@ public class EnemyLogic : MonoBehaviour {
 		animator = gameObject.GetComponent<Animator>();
 
 		animator.enabled = false;
+
+		audio.clip = hit;
 	}
 	
 	// Update is called once per frame
@@ -162,14 +166,17 @@ public class EnemyLogic : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 
 		// determine what collided with the enemy
-		if (other.tag == "Player") {
+		if (other.tag == "Player" && mini_game_manager.playing) {
 			// player collides with enemy
+
+			audio.Play ();
 
 			if (PlayerPrefs.GetInt ("hits", 0) < (PlayerPrefs.GetInt ("armor", 0) + 1) && mini_game_manager.in_mini_game) {
 				// add hit
 				PlayerPrefs.SetInt ("hits", PlayerPrefs.GetInt ("hits", 0) + 1);
 			} else if (mini_game_manager.in_mini_game) {
 				// die
+				PlayerPrefs.SetInt ("hits", PlayerPrefs.GetInt ("hits", 0) + 1);
 				mini_game_manager.ExitGame (false);
 			}
 

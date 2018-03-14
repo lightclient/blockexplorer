@@ -18,6 +18,10 @@ public class MiniGameMoveLogic : MonoBehaviour {
 	enum Direction { Up, Down, Left, Right };
 	private Direction current_direction;
 
+	public AudioSource source;
+	public AudioClip blast_sound;
+	public AudioClip wrong_sound;
+
 	void Start() {
 		mgm = mini_game_manager_object.GetComponent<MiniGameManager> ();
 		animator = gameObject.GetComponent<Animator>();
@@ -38,9 +42,11 @@ public class MiniGameMoveLogic : MonoBehaviour {
 			float verticalMovement = Input.GetAxis ("Vertical");
 
 			// if this is the first user input, begin the game and the player animations
-			if (!mgm.playing && ( horizontalMovement != 0 || verticalMovement != 0) ) {
+			if (!mgm.playing && ( horizontalMovement != 0 || verticalMovement != 0) && mgm.in_mini_game ) {
 				mgm.playing = true;
+				mgm.source.Play ();
 				animator.enabled = true;
+
 			}
 
 			// if the mini game is currently being played, run through the logic
@@ -48,9 +54,14 @@ public class MiniGameMoveLogic : MonoBehaviour {
 
 				// freeze blast logic
 				if (Input.GetKeyDown(KeyCode.Space)) {
-					if (PlayerPrefs.GetInt ("freeze_blasts", PlayerPrefs.GetInt("freeze",0) + 1) > 0) {
-						PlayerPrefs.SetInt ("freeze_blasts", PlayerPrefs.GetInt ("freeze_blasts", PlayerPrefs.GetInt("freeze",0) + 1) - 1);
-						FreezeEnemies (transform.position, 5);
+					if (PlayerPrefs.GetInt ("freeze_blasts", PlayerPrefs.GetInt ("freeze", 0) + 1) > 0) {
+						PlayerPrefs.SetInt ("freeze_blasts", PlayerPrefs.GetInt ("freeze_blasts", PlayerPrefs.GetInt ("freeze", 0) + 1) - 1);
+						FreezeEnemies (transform.position, PlayerPrefs.GetInt ("freeze", 0));
+						source.clip = blast_sound;
+						source.Play ();
+					} else {
+						source.clip = wrong_sound;
+						source.Play ();
 					}
 				}
 
@@ -105,6 +116,7 @@ public class MiniGameMoveLogic : MonoBehaviour {
 	{
 		// create new freeze blast and set its location on top of the player
 		current_freeze_fire = (GameObject)Instantiate (freeze_fire);
+		current_freeze_fire.transform.localScale *= 1 + (3 * ( radius / 15) );
 		current_freeze_fire.transform.position = transform.position;
 	}
 }
